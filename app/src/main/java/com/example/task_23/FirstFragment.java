@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.task_23.databinding.FragmentFirstBinding;
 import java.text.SimpleDateFormat;
@@ -26,10 +27,13 @@ public class FirstFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories);
         binding.spCategory.setAdapter(adapter);
+
         binding.etDate.setOnClickListener(v -> showDatePicker());
         binding.btnSave.setOnClickListener(v -> saveExpenseToFirebase());
     }
@@ -67,9 +71,8 @@ public class FirstFragment extends Fragment {
                         binding.etDescription.setText("");
                         binding.etAmount.setText("");
                         binding.etDate.setText("");
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(requireContext(), "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        androidx.navigation.fragment.NavHostFragment.findNavController(FirstFragment.this)
+                                .navigate(R.id.action_FirstFragment_to_SecondFragment);
                     });
         }
     }

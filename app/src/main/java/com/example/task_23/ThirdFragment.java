@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 
+// שונה ל-ThirdfragmentBinding בהתאם לקובץ ה-XML הנוכחי שלך
 import com.example.task_23.databinding.ThirdfragmentBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,33 +27,52 @@ public class ThirdFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // שימוש ב-FragmentThirdBinding לפי הדרישה
         binding = ThirdfragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        // תיקון הקריאה ל-super
         super.onViewCreated(view, savedInstanceState);
 
         allExpensesList = new ArrayList<>();
         filteredList = new ArrayList<>();
 
-        // 1. הגדרת ה-Spinner עם קטגוריות
-        String[] categories = {"כל הקטגוריות", "אוכל", "קניות", "תחבורה", "בריאות", "אחר"};
+        // תיקון מערך הקטגוריות להתאמה מלאה ל-FirstFragment
+        String[] categories = {"כל הקטגוריות", "אוכל", "בילוי", "בריאות", "קניות", "אחר"};
+
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, categories);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spFilterCategory.setAdapter(spinnerAdapter);
 
-        // 2. הגדרת ה-Adapter עבור ה-ListView של התוצאות
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, filteredList);
+        // שדרוג ה-Adapter לתצוגה מעוצבת עם ה-Layout המותאם אישית שלך
+        adapter = new ArrayAdapter<Expense>(requireContext(), R.layout.expense_list_item, filteredList) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.expense_list_item, parent, false);
+                }
+
+                Expense expense = getItem(position);
+
+                android.widget.TextView tvDesc = convertView.findViewById(R.id.tvItemDescription);
+                android.widget.TextView tvDetails = convertView.findViewById(R.id.tvItemDetails);
+                android.widget.TextView tvAmount = convertView.findViewById(R.id.tvItemAmount);
+
+                if (expense != null) {
+                    tvDesc.setText(expense.getDescription());
+                    tvDetails.setText(expense.getCategory() + " | " + expense.getDate());
+                    tvAmount.setText(expense.getAmount() + " ₪");
+                }
+
+                return convertView;
+            }
+        };
+
         binding.lvFilterResults.setAdapter(adapter);
 
-        // 3. משיכת הנתונים מ-Firebase
         loadExpensesFromFirebase();
-
-        // 4. האזנה לכפתור הסינון
         binding.btnApplyFilter.setOnClickListener(v -> applyFilters());
     }
 
@@ -67,7 +87,6 @@ public class ThirdFragment extends Fragment {
                         allExpensesList.add(expense);
                     }
                 }
-                // בהתחלה מציגים את כל הרשימה
                 filteredList.clear();
                 filteredList.addAll(allExpensesList);
                 adapter.notifyDataSetChanged();
@@ -97,16 +116,10 @@ public class ThirdFragment extends Fragment {
         filteredList.clear();
 
         for (Expense expense : allExpensesList) {
-            // סינון 1: חיפוש לפי תיאור
             boolean matchesDesc = expense.getDescription().toLowerCase().contains(searchDesc);
-
-            // סינון 2: חיפוש לפי קטגוריה
             boolean matchesCategory = selectedCategory.equals("כל הקטגוריות") || expense.getCategory().equals(selectedCategory);
-
-            // סינון 3: חיפוש לפי סכום מינימלי
             boolean matchesAmount = expense.getAmount() >= minAmount;
 
-            // שילוב כל התנאים יחד
             if (matchesDesc && matchesCategory && matchesAmount) {
                 filteredList.add(expense);
             }

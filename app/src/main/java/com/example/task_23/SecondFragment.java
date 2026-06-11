@@ -1,6 +1,5 @@
 package com.example.task_23;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,8 @@ import android.widget.EditText;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import com.example.task_23.databinding.FragmentSecondBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -28,7 +29,8 @@ public class SecondFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         expenseList = new ArrayList<>();
@@ -60,6 +62,7 @@ public class SecondFragment extends Fragment {
 
         binding.listViewExpenses.setAdapter(adapter);
         initFirebaseListener();
+
         binding.listViewExpenses.setOnItemLongClickListener((parent, view1, position, id) -> {
             Expense selectedExpense = expenseList.get(position);
             showActionDialog(selectedExpense);
@@ -82,16 +85,16 @@ public class SecondFragment extends Fragment {
                     }
                 }
 
-                // מיונים וסינונים: המרת התאריך מ-String ל-Date ומיון מהחדש לישן
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+                // תיקון פורמט התאריך להתאמה מלאה ל-FirstFragment
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
                 java.util.Collections.sort(expenseList, (e1, e2) -> {
                     try {
                         java.util.Date d1 = sdf.parse(e1.getDate());
                         java.util.Date d2 = sdf.parse(e2.getDate());
-                        // מיון יורד (מהחדש ביותר לישן ביותר): e2 מושווה ל-e1
+                        // מיון יורד (מהחדש ביותר לישן ביותר)
                         return d2.compareTo(d1);
                     } catch (Exception e) {
-                        return 0; // במקרה של שגיאת פורמט, לא ישנה מיקום
+                        return 0;
                     }
                 });
 
@@ -106,9 +109,6 @@ public class SecondFragment extends Fragment {
         });
     }
 
-    /**
-     * מציג דיאלוג בחירה המאפשר למשתמש לבחור בין עדכון למחיקה של ההוצאה.
-     */
     private void showActionDialog(Expense expense) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("ניהול הוצאה: " + expense.getDescription())
@@ -120,6 +120,7 @@ public class SecondFragment extends Fragment {
                     }
                 }).show();
     }
+
     private void showUpdateDialog(Expense expense) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("עדכון סכום");
@@ -130,25 +131,21 @@ public class SecondFragment extends Fragment {
         builder.setView(input);
 
         builder.setPositiveButton("אישור", (dialog, which) -> {
-                    String newAmountStr = input.getText().toString().trim();
-                    if (!newAmountStr.isEmpty()) {
-                        double newAmount = Double.parseDouble(newAmountStr);
-                        expense.setAmount(newAmount);
+            String newAmountStr = input.getText().toString().trim();
+            if (!newAmountStr.isEmpty()) {
+                double newAmount = Double.parseDouble(newAmountStr);
+                expense.setAmount(newAmount);
 
-                        // עדכון הערך ב-Firebase לפי ה-Key הייחודי - קוד נקי ותקין!
-                        FBref.myRef.child(expense.getKeyID()).setValue(expense)
-                                .addOnSuccessListener(unused -> {
-                                    Toast.makeText(requireContext(), "הסכום עודכן!", Toast.LENGTH_SHORT).show();
-                                });
-                    }
-                });
+                FBref.myRef.child(expense.getKeyID()).setValue(expense)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(requireContext(), "הסכום עודכן!", Toast.LENGTH_SHORT).show();
+                        });
+            }
+        });
         builder.setNegativeButton("ביטול", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
-    /**
-     * מוחק את ההוצאה מ-Firebase.
-     */
     private void deleteExpense(Expense expense) {
         FBref.myRef.child(expense.getKeyID()).removeValue()
                 .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "ההוצאה נמחקה בהצלחה!", Toast.LENGTH_SHORT).show())
