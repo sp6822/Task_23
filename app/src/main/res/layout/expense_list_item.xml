@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:layoutDirection="rtl">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/tvItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="תיאור"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/tvItemDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="קטגוריה | תאריך"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvItemAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:text="0 ₪"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F" />
+</RelativeLayout>

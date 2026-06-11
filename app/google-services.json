@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "179335534819",
+    "project_id": "fir-expenses-ef031",
+    "storage_bucket": "fir-expenses-ef031.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179335534819:android:23568c058d04579aaf0dd6",
+        "android_client_info": {
+          "package_name": "com.example.firebaseexpenses"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnqw059VVKk388_MJbSDgorVcF2JuopNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179335534819:android:36cff3ba242322b7af0dd6",
+        "android_client_info": {
+          "package_name": "com.example.task23"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnqw059VVKk388_MJbSDgorVcF2JuopNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179335534819:android:6bf10109862e4090af0dd6",
+        "android_client_info": {
+          "package_name": "com.example.task_23"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnqw059VVKk388_MJbSDgorVcF2JuopNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
