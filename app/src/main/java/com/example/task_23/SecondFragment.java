@@ -1,6 +1,8 @@
 package com.example.task_23;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.example.task_23.databinding.FragmentSecondBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +24,8 @@ import java.util.ArrayList;
 public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
-    private ArrayList<Expense> expenseList;
+    private ArrayList<Expense> allExpensesList;
+    private ArrayList<Expense> filteredList;
     private ArrayAdapter<Expense> adapter;
 
     @Override
@@ -33,10 +38,10 @@ public class SecondFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        expenseList = new ArrayList<>();
+        allExpensesList = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
-        // הגדרת ה-Adapter המותאם אישית בתוך ה-ListView
-        adapter = new ArrayAdapter<Expense>(requireContext(), R.layout.expense_list_item, expenseList) {
+        adapter = new ArrayAdapter<Expense>(requireContext(), R.layout.expense_list_item, filteredList) {
             @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -63,43 +68,31 @@ public class SecondFragment extends Fragment {
         binding.listViewExpenses.setAdapter(adapter);
         initFirebaseListener();
 
+        setupFilterListeners();
+
         binding.listViewExpenses.setOnItemLongClickListener((parent, view1, position, id) -> {
-            Expense selectedExpense = expenseList.get(position);
+            Expense selectedExpense = filteredList.get(position);
             showActionDialog(selectedExpense);
             return true;
         });
+
+        binding.btnGoToCreate.setOnClickListener(v ->
+                NavHostFragment.findNavController(SecondFragment.this).popBackStack()
+        );
     }
 
     private void initFirebaseListener() {
         FBref.myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                expenseList.clear();
-                double totalSum = 0;
-
+                allExpensesList.clear();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     Expense expense = data.getValue(Expense.class);
                     if (expense != null) {
-                        expenseList.add(expense);
-                        totalSum += expense.getAmount();
+                        allExpensesList.add(expense);
                     }
                 }
-
-                // תיקון פורמט התאריך להתאמה מלאה ל-FirstFragment
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
-                java.util.Collections.sort(expenseList, (e1, e2) -> {
-                    try {
-                        java.util.Date d1 = sdf.parse(e1.getDate());
-                        java.util.Date d2 = sdf.parse(e2.getDate());
-                        // מיון יורד (מהחדש ביותר לישן ביותר)
-                        return d2.compareTo(d1);
-                    } catch (Exception e) {
-                        return 0;
-                    }
-                });
-
-                adapter.notifyDataSetChanged();
-                binding.tvTotalExpenses.setText("סך כל ההוצאות: " + totalSum + " ₪");
+                applyFiltersAndSort();
             }
 
             @Override
@@ -107,6 +100,65 @@ public class SecondFragment extends Fragment {
                 Toast.makeText(requireContext(), "שגיאה בטעינת הנתונים: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void applyFiltersAndSort() {
+        String searchQuery = binding.etSearchDesc.getText().toString().trim().toLowerCase();
+        String minAmountStr = binding.etMinAmountFilter.getText().toString().trim();
+        double minAmount = minAmountStr.isEmpty() ? 0 : Double.parseDouble(minAmountStr);
+
+        filteredList.clear();
+        double totalSum = 0;
+
+        for (Expense expense : allExpensesList) {
+            boolean matchesSearch = expense.getDescription().toLowerCase().contains(searchQuery);
+            boolean matchesAmount = expense.getAmount() >= minAmount;
+
+            if (matchesSearch && matchesAmount) {
+                filteredList.add(expense);
+                totalSum += expense.getAmount();
+            }
+        }
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        java.util.Collections.sort(filteredList, (e1, e2) -> {
+            try {
+                java.util.Date d1 = sdf.parse(e1.getDate());
+                java.util.Date d2 = sdf.parse(e2.getDate());
+                if (d1 != null && d2 != null) {
+                    return d2.compareTo(d1);
+                }
+            } catch (Exception e) {
+                return 0;
+            }
+            return 0;
+        });
+
+        adapter.notifyDataSetChanged();
+        binding.tvTotalExpenses.setText("סך כל ההוצאות: " + totalSum + " ₪");
+    }
+
+    // התיקון המרכזי כאן - החתימות של ה-TextWatcher מדויקות ונקיות
+    private void setupFilterListeners() {
+        TextWatcher filterTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // אין צורך במימוש
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // אין צורך במימוש
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                applyFiltersAndSort();
+            }
+        };
+
+        binding.etSearchDesc.addTextChangedListener(filterTextWatcher);
+        binding.etMinAmountFilter.addTextChangedListener(filterTextWatcher);
     }
 
     private void showActionDialog(Expense expense) {
@@ -137,9 +189,7 @@ public class SecondFragment extends Fragment {
                 expense.setAmount(newAmount);
 
                 FBref.myRef.child(expense.getKeyID()).setValue(expense)
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(requireContext(), "הסכום עודכן!", Toast.LENGTH_SHORT).show();
-                        });
+                        .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "הסכום עודכן!", Toast.LENGTH_SHORT).show());
             }
         });
         builder.setNegativeButton("ביטול", (dialog, which) -> dialog.cancel());
@@ -148,7 +198,7 @@ public class SecondFragment extends Fragment {
 
     private void deleteExpense(Expense expense) {
         FBref.myRef.child(expense.getKeyID()).removeValue()
-                .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "ההוצאה נמחקה בהצלחה!", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "ההוצאה נמחקה!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(requireContext(), "שגיאה במחיקה: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 

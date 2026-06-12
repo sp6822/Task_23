@@ -1,71 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:layoutDirection="rtl">
+    tools:context=".FirstFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="הוספת הוצאה חדשה"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="הוספת הוצאה חדשה"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="24dp"
-            android:textAlignment="center" />
+    <EditText
+        android:id="@+id/etDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="תיאור ההוצאה (למשל: סופר, דלק)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textDirection="rtl"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="תיאור ההוצאה (למשל: סופרמרקט)"
-            android:inputType="text"
-            android:layout_marginBottom="16dp" />
+    <EditText
+        android:id="@+id/etAmount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="סכום בשקלים"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textDirection="rtl"
+        app:layout_constraintTop_toBottomOf="@id/etDescription"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <EditText
-            android:id="@+id/etAmount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="סכום (ב-₪)"
-            android:inputType="numberDecimal"
-            android:layout_marginBottom="16dp" />
+    <Spinner
+        android:id="@+id/spinnerCategory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:background="@android:drawable/btn_dropdown"
+        app:layout_constraintTop_toBottomOf="@id/etAmount"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="בחר קטגוריה:"
-            android:textSize="16sp"
-            android:layout_marginBottom="4dp" />
+    <EditText
+        android:id="@+id/etDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="תאריך (YYYY-MM-DD)"
+        android:inputType="date"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textDirection="rtl"
+        app:layout_constraintTop_toBottomOf="@id/spinnerCategory"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <Spinner
-            android:id="@+id/spCategory"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="16dp" />
+    <Button
+        android:id="@+id/btnSaveExpense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="שמור הוצאה"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        app:layout_constraintTop_toBottomOf="@id/etDate"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <EditText
-            android:id="@+id/etDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="לחץ לבחירת תאריך"
-            android:focusable="false"
-            android:clickable="true"
-            android:layout_marginBottom="32dp" />
+    <Button
+        android:id="@+id/btnViewExpenses"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="צפייה בכל ההוצאות"
+        android:textSize="16sp"
+        android:padding="12dp"
+        app:layout_constraintTop_toBottomOf="@id/btnSaveExpense"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="שמור הוצאה ב-Firebase"
-            android:textSize="18sp"
-            android:backgroundTint="#4CAF50"
-            android:textColor="#FFFFFF" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

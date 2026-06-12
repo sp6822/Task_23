@@ -1,27 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
-    android:layoutDirection="rtl">
+    tools:context=".SecondFragment">
+
+    <EditText
+        android:id="@+id/etSearchDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="חפשי לפי תיאור ההוצאה..."
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textDirection="rtl"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
+
+    <EditText
+        android:id="@+id/etMinAmountFilter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="הציגי הוצאות החל מסכום..."
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textDirection="rtl"
+        app:layout_constraintTop_toBottomOf="@id/etSearchDesc"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
     <TextView
         android:id="@+id/tvTotalExpenses"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="סך כל ההוצאות: 0 ₪"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#E91E63"
-        android:layout_marginBottom="16dp"
-        android:textAlignment="center" />
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/etMinAmountFilter"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
 
     <ListView
         android:id="@+id/listViewExpenses"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="#CCCCCC"
-        android:dividerHeight="1dp" />
-</LinearLayout>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalExpenses"
+        app:layout_bottomToTop="@id/btnGoToCreate"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnGoToCreate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="הוספת הוצאה חדשה"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        app:layout_bottomtoBottomOf="parent"
+        app:layout_startToStartOf="parent"
+        app:layout_endToEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
